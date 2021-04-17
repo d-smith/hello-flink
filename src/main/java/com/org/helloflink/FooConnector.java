@@ -1,8 +1,14 @@
 package com.org.helloflink;
 
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.builder.CloudEventBuilder;
 import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
 
-public class FooConnector extends RichParallelSourceFunction<FooMessage> {
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
+public class FooConnector extends RichParallelSourceFunction<CloudEvent> {
 
     private FooConnectorConfig connectorConfig;
 
@@ -13,9 +19,17 @@ public class FooConnector extends RichParallelSourceFunction<FooMessage> {
     private Boolean running = true;
 
     @Override
-    public void run(SourceContext<FooMessage> sourceContext) throws Exception {
+    public void run(SourceContext<CloudEvent> sourceContext) throws Exception {
         while(running) {
-            sourceContext.collect(new FooMessage("yo"));
+            CloudEvent ce = CloudEventBuilder.v1()
+                    .withId(UUID.randomUUID().toString())
+                    .withSource(URI.create("ab/c/d"))
+                    .withData("text/plain", "hello flink".getBytes())
+                    .withType("e1")
+                    .withTime(OffsetDateTime.now())
+                    .build();
+
+            sourceContext.collect(ce);
             Thread.sleep(1000);
         }
     }

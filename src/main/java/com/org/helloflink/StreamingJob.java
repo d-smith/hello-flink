@@ -18,6 +18,7 @@
 
 package com.org.helloflink;
 
+import io.cloudevents.CloudEvent;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -40,7 +41,7 @@ public class StreamingJob {
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
 		FooConnectorConfig cfg = new FooConnectorConfig();
-		DataStream<FooMessage> dataStream = env.addSource(new FooConnector(cfg));
+		DataStream<CloudEvent> dataStream = env.addSource(new FooConnector(cfg));
 
 		dataStream.print();
 
